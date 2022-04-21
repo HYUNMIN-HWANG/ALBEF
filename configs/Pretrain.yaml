@@ -1,17 +1,27 @@
-train_file: ['data/coco.json',
-               'data/vg.json',
-               'data/cc12m.json',
-               'data/cc3m_train.json',
-               'data/cc3m_val.json',
-               'data/sbu.json'               
-               ]
+# train_file: ['data/coco.json',
+#                'data/vg.json',
+#                'data/cc12m.json',
+#                'data/cc3m_train.json',
+#                'data/cc3m_val.json',
+#                'data/sbu.json'               
+#                ]
+
+train_file: [ # 'D:\ALBEF_dir\json_pretrain\coco_re.json',
+              #'E:\STUDY\ALBEF\json_pretrain\vg.json',
+              #'E:\STUDY\ALBEF\json_pretrain\cc12m.json',
+              #'E:\STUDY\ALBEF\json_pretrain\cc3m_train.json',
+              #'E:\STUDY\ALBEF\json_pretrain\cc3m_val.json',
+              #'E:\STUDY\ALBEF\json_pretrain\sbu.json',       
+              'D:\\ALBEF_dir\\json_pretrain\\captions_train2017_re.json'        
+              ]
+
 # each train_file (json) contains a python list where each item is {'image': img_path, 'caption': text or list_of_text }               
 bert_config: 'configs/config_bert.json'
 
 image_res: 256
 vision_width: 768
 embed_dim: 256
-batch_size: 64
+batch_size: 2 #64
 temp: 0.07
 mlm_probability: 0.15
 queue_size: 65536

@@ -7,7 +7,8 @@
 
 import argparse
 import os
-import ruamel_yaml as yaml
+# import ruamel_yaml as yaml
+import ruamel.yaml as yaml
 import numpy as np
 import random
 import time
@@ -31,6 +32,8 @@ from dataset import create_dataset, create_sampler, create_loader
 from scheduler import create_scheduler
 from optim import create_optimizer
 
+# local_rank = int(os.environ["LOCAL_RANK"])
+# os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device, scheduler, config):
     # train
@@ -143,7 +146,11 @@ def main(args, config):
         print('load checkpoint from %s'%args.checkpoint)
     
     model_without_ddp = model
-    if args.distributed:
+    if args.distributed:    
+        # torch.distributed.init_process_group(
+        #     backend='nccl', world_size=4)
+        #torch.distributed.init_process_group(
+        #    backend='gloo', world_size=4)    
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
         model_without_ddp = model.module    
     
