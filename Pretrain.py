@@ -37,6 +37,7 @@ from optim import create_optimizer
 
 def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device, scheduler, config):
     # train
+    
     model.train()  
     
     metric_logger = utils.MetricLogger(delimiter="  ")
@@ -88,6 +89,7 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
     
     
 def main(args, config):
+    
     utils.init_distributed_mode(args)    
     
     device = torch.device(args.device)
@@ -117,6 +119,7 @@ def main(args, config):
     data_loader = create_loader(datasets,samplers,batch_size=[config['batch_size']], num_workers=[4], is_trains=[True], collate_fns=[None])[0]
 
     tokenizer = BertTokenizer.from_pretrained(args.text_encoder)
+    # PreTrainedTokenizer(name_or_path='bert-base-uncased', vocab_size=30522, model_max_len=512, is_fast=False, padding_side='right', special_tokens={'unk_token': '[UNK]', 'sep_token': '[SEP]', 'pad_token': '[PAD]', 'cls_token': '[CLS]', 'mask_token': '[MASK]'})
 
     #### Model #### 
     print("Creating model")
@@ -124,9 +127,9 @@ def main(args, config):
     
     model = model.to(device)   
         
-    arg_opt = utils.AttrDict(config['optimizer'])
+    arg_opt = utils.AttrDict(config['optimizer'])   # {'opt': 'adamW', 'lr': 0.0001, 'weight_decay': 0.02}
     optimizer = create_optimizer(arg_opt, model)
-    arg_sche = utils.AttrDict(config['schedular'])
+    arg_sche = utils.AttrDict(config['schedular'])  # {'sched': 'cosine', 'lr': 0.0001, 'epochs': 30, 'min_lr': 1e-05, 'decay_rate': 1, 'warmup_lr': 1e-05, 'warmup_epochs': 20, 'cooldown_epochs': 0}
     lr_scheduler, _ = create_scheduler(arg_sche, optimizer)  
 
     
@@ -161,7 +164,7 @@ def main(args, config):
         
         if epoch>0:
             lr_scheduler.step(epoch+warmup_steps)  
-            
+
         train_stats = train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device, lr_scheduler, config) 
         if utils.is_main_process():  
             log_stats = {**{f'train_{k}': v for k, v in train_stats.items()},
@@ -208,3 +211,5 @@ if __name__ == '__main__':
     yaml.dump(config, open(os.path.join(args.output_dir, 'config.yaml'), 'w'))    
     
     main(args, config)
+
+    # python -m torch.distributed.launch --nproc_per_node=2 --use_env Pretrain.py --config ./configs/Pretrain.yaml --output_dir output/Pretrain 
